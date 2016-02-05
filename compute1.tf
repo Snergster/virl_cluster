@@ -1,5 +1,5 @@
 resource "packet_device" "compute1" {
-        hostname = compute1
+        hostname = "compute1"
         plan = "${var.packet_machine_type}"
         facility = "ewr1"
         operating_system = "ubuntu_14_04"

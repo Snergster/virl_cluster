@@ -43,11 +43,12 @@ resource "packet_device" "virl" {
         "mkdir -p /etc/salt/pki/minion",
         "mkdir -p /etc/salt/master.d"
     ]
+    }
     provisioner "file" {
         source = "scripts/getintip"
         destination = "/usr/local/bin/getintip"
     }
-    }
+    
     provisioner "file" {
         source = "keys/"
         destination = "/etc/salt/pki/minion"
@@ -85,39 +86,37 @@ resource "packet_device" "virl" {
       inline = [
          "set -e",
          "set -x",
-         "crudini --set /etc/virl.ini DEFAULT internalnet_controller_IP ${packet_device.vcont.network.2.address}",
-         "crudini --set /etc/virl.ini DEFAULT internalnet_IP ${packet_device.vcont.network.2.address}",
-         "crudini --set /etc/virl.ini DEFAULT compute1_internalnet_ip ${packet_device.vcompute1.network.2.address}",
-         "crudini --set /etc/virl.ini DEFAULT compute1_internalnet_gateway ${packet_device.vcompute1.network.2.gateway}",
-         "crudini --set /etc/virl.ini DEFAULT compute2_internalnet_ip ${packet_device.vcompute2.network.2.address}",
-         "crudini --set /etc/virl.ini DEFAULT compute2_internalnet_gateway ${packet_device.vcompute2.network.2.gateway}",
+         "crudini --set /etc/virl.ini DEFAULT internalnet_controller_IP ${packet_device.virl.network.2.address}",
+         "crudini --set /etc/virl.ini DEFAULT internalnet_IP ${packet_device.virl.network.2.address}",
+         "crudini --set /etc/virl.ini DEFAULT compute1_internalnet_ip ${packet_device.compute1.network.2.address}",
+         "crudini --set /etc/virl.ini DEFAULT compute1_internalnet_gateway ${packet_device.compute1.network.2.gateway}"
     ]
     }
 /* second compute */
-   provisioner "remote-exec" {
-      inline = [
-         "set -e",
-         "set -x",
-         "crudini --set /etc/virl.ini DEFAULT compute2_internalnet_ip ${packet_device.vcompute2.network.2.address}",
-         "crudini --set /etc/virl.ini DEFAULT compute2_internalnet_gateway ${packet_device.vcompute2.network.2.gateway}",
-    ]
-    }
-# /* third compute */
 #    provisioner "remote-exec" {
 #       inline = [
 #          "set -e",
 #          "set -x",
-#          "crudini --set /etc/virl.ini DEFAULT compute3_internalnet_ip ${packet_device.vcompute3.network.2.address}",
-#          "crudini --set /etc/virl.ini DEFAULT compute3_internalnet_gateway ${packet_device.vcompute4.network.2.gateway}",
+#          "crudini --set /etc/virl.ini DEFAULT compute2_internalnet_ip ${packet_device.compute2.network.2.address}",
+#          "crudini --set /etc/virl.ini DEFAULT compute2_internalnet_gateway ${packet_device.compute2.network.2.gateway}",
 #     ]
 #     }
-# /* fourth compute */
+/* third compute */
 #    provisioner "remote-exec" {
 #       inline = [
 #          "set -e",
 #          "set -x",
-#          "crudini --set /etc/virl.ini DEFAULT compute4_internalnet_ip ${packet_device.vcompute4.network.2.address}",
-#          "crudini --set /etc/virl.ini DEFAULT compute4_internalnet_gateway ${packet_device.vcompute4.network.2.gateway}",
+#          "crudini --set /etc/virl.ini DEFAULT compute3_internalnet_ip ${packet_device.compute3.network.2.address}",
+#          "crudini --set /etc/virl.ini DEFAULT compute3_internalnet_gateway ${packet_device.compute4.network.2.gateway}",
+#     ]
+#     }
+/* fourth compute */
+#    provisioner "remote-exec" {
+#       inline = [
+#          "set -e",
+#          "set -x",
+#          "crudini --set /etc/virl.ini DEFAULT compute4_internalnet_ip ${packet_device.compute4.network.2.address}",
+#          "crudini --set /etc/virl.ini DEFAULT compute4_internalnet_gateway ${packet_device.compute4.network.2.gateway}",
 #     ]
 #     }
 
@@ -134,6 +133,7 @@ resource "packet_device" "virl" {
     # copy authorized keys from root to virl user
          "salt-call state.sls virl.packet.keycopy",
          "salt-call state.highstate",
+         "salt-call state.sls common.bridge",
          "salt-call state.sls virl.basics",
     # dead mans timer
          "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.virl.id}\n'>/etc/deadtimer",
@@ -142,7 +142,6 @@ resource "packet_device" "virl" {
          "salt-call state.sls openstack",
          "/usr/local/bin/vinstall salt",
          "salt-call state.sls openstack.setup",
-         "salt-call state.sls common.bridge",
          "salt-call state.sls openstack.restart",
          "salt-call state.sls virl.std",
          "salt-call state.sls virl.ank",
@@ -156,20 +155,21 @@ resource "packet_device" "virl" {
 
    ]
   }
+/* openvpn client key pull */
     provisioner "local-exec" {
         command = "sftp -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.virl.network.0.address}:/var/local/virl/client.ovpn client.ovpn"
     }
 /* default 1 compute */
     provisioner "local-exec" {
-        command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute1.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
+        command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute1.network.0.address} '/root/compute_builder ${packet_device.virl.network.2.address}'"
     }
 # /* 2 compute nodes */
 #     provisioner "local-exec" {
-#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute2.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute1.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
+#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute2.network.0.address} '/root/compute_builder ${packet_device.virl.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute1.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
 #     }
 # /* 3+4 compute nodes */
 #     provisioner "local-exec" {
-#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute3.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute4.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
+#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute3.network.0.address} '/root/compute_builder ${packet_device.virl.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute4.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
 #     }
 
    provisioner "remote-exec" {
