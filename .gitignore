@@ -1,0 +1,16 @@
+*-e
+*~
+id_rsa
+id_rsa.pub
+keys/minion.pem
+keys/minion.pub
+variables.tf
+conf/orig.extra.conf
+*.tfstate
+*.tfstate.backup
+*.sw[op]
+.DS_Store
+client.ovpn
+passwords.tf
+standalone.README.md
+settings.tf
