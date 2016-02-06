@@ -166,11 +166,11 @@ resource "packet_device" "virl" {
     }
 # /* 2 compute nodes */
 #     provisioner "local-exec" {
-#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute2.network.0.address} '/root/compute_builder ${packet_device.virl.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute1.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
+#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute2.network.0.address} '/root/compute_builder ${packet_device.virl.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute1.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
 #     }
 # /* 3+4 compute nodes */
 #     provisioner "local-exec" {
-#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute3.network.0.address} '/root/compute_builder ${packet_device.virl.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.vcompute4.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
+#         command = "ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute3.network.0.address} '/root/compute_builder ${packet_device.virl.network.2.address}' >> compute2.out & ssh -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.compute4.network.0.address} '/root/compute_builder ${packet_device.vcont.network.2.address}'"
 #     }
 
    provisioner "remote-exec" {
