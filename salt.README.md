@@ -67,7 +67,7 @@
  
     `terraform destroy .`
 
-To start up again, repeat step 8.
+To start up again, repeat step 9.
 
 [NOTE] Your uwmadmin and guest passwords are in passwords.tf. If you can't remember them, this is where you can find them, or by running terraform output
  
