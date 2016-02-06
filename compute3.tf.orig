@@ -38,7 +38,7 @@ resource "packet_device" "compute3" {
     }
     provisioner "file" {
         source = "conf/extra.conf"
-        destination = "/etc/salt/minion.d/extra.conf"
+        destination = "/etc/salt/minion.d/compute.extra.conf"
     }
    provisioner "remote-exec" {
       inline = [

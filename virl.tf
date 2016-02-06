@@ -149,6 +149,7 @@ resource "packet_device" "virl" {
          "salt-call state.sls openstack.restart",
          "salt-call state.sls virl.routervms",
          "salt-call state.sls virl.openvpn",
+         "salt-call state.sls_id 'l2tpv3 modprobe default' common.virl",
          "salt-call state.sls virl.openvpn.packet",
     #This is to keep the sftp from failing and taking terraform out with it in case no vpn is actually installed
          "touch /var/local/virl/client.ovpn"
