@@ -110,6 +110,7 @@ resource "packet_device" "virl" {
          "salt-call state.sls virl.basics",
     # dead mans timer
          "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.virl.id}\n'>/etc/deadtimer",
+         "sleep 3",
          "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer",
          "salt-call state.sls common.salt-master.cluster",
          "salt-call state.sls openstack",
@@ -199,6 +200,7 @@ resource "packet_device" "compute1" {
         "apt-get dist-upgrade -y",
         "apt-get install at -y",
         "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.compute1.id}\n'>/etc/deadtimer",
+        "sleep 3",
         "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer",
         "reboot"
    ]
