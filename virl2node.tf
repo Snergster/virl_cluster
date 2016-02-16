@@ -8,7 +8,7 @@ resource "packet_project" "virl_project" {
         name = "virl server on packet"
 }
 
-resource "packet_ssh_key" "virlkey" {
+resource "packet_ssh_key" "virlckey" {
         name = "virlkey"
         public_key = "${file("${var.ssh_private_key}.pub")}"
 }
@@ -100,7 +100,7 @@ resource "packet_device" "virl" {
          "set -e",
          "set -x",
          "wget -O install_salt.sh https://bootstrap.saltstack.com",
-         "sh ./install_salt.sh -P stable",
+         "sh ./install_salt.sh -M -P stable",
     # create virl user
          "salt-call state.sls common.users",
     # copy authorized keys from root to virl user

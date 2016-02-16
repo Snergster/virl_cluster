@@ -2,7 +2,7 @@
 printf "\nmaster: %s\n" "$1" >>/etc/salt/minion.d/extra.conf
 wget -O install_salt.sh https://bootstrap.saltstack.com
 chmod 755 ./install_salt.sh
-./install_salt.sh -P stable
+./install_salt.sh -M -P stable
 /usr/bin/salt-call state.sls common.users
 /usr/bin/salt-call state.highstate
 /usr/bin/salt-call state.sls common.bridge
