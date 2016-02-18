@@ -108,7 +108,7 @@ resource "packet_device" "virl" {
          "set -e",
          "set -x",
          "crudini --set /etc/virl.ini DEFAULT compute3_active True",
-         "crudini --set /etc/virl.ini DEFAULT compute3_internalnet_ip ${packet_device.compute3.network.2.address}",
+         "crudini --set /etc/virl.ini DEFAULT compute3_internalnet_ip ${packet_device.compute4.network.2.address}",
          "crudini --set /etc/virl.ini DEFAULT compute3_internalnet_gateway ${packet_device.compute4.network.2.gateway}",
     ]
     }
