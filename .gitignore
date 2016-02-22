@@ -17,3 +17,6 @@ settings.tf
 virl3node.tf
 virl4node.tf
 virl5node.tf
+*.out
+virl2node.tf.orig
+cluster.ovpn

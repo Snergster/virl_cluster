@@ -55,8 +55,8 @@ THESE STEPS ARE FOR USERS WHO WANT TO RUN 'VIRL CLUSTER on PACKET'.  YOU MUST HA
 
 12. The VIRL server is provisioned in a secure manner. To access the server, you must establish an OpenVPN tunnel to the server.
     1. Install an OpenVPN client for your system.
-    2. The set up of the remote VIRL server will automatically configure the OpenVPN server. The 'client.ovpn' connection profile will be automatically downloaded to the directory from which you ran the `terraform apply .` command. 
-    3. The 'client.ovpn' file can be copied out to other devices, such as a laptop hosting your local VIRL instance.
+    2. The set up of the remote VIRL server will automatically configure the OpenVPN server. The 'cluster.ovpn' connection profile will be automatically downloaded to the directory from which you ran the `terraform apply .` command. 
+    3. The 'cluster.ovpn' file can be copied out to other devices, such as a laptop hosting your local VIRL instance.
     4. Download the file and open it with your OpenVPN client
    
     NOTE - the VIRL server will reboot once the VIRL software has been installed. You must therefore wait until the reboot has completed before bringing up the OpenVPN tunnel.

@@ -9,7 +9,7 @@ resource "packet_project" "virl_project" {
 }
 
 resource "packet_ssh_key" "virlckey" {
-        name = "virlkey"
+        name = "virlckey"
         public_key = "${file("${var.ssh_private_key}.pub")}"
 }
 
@@ -17,7 +17,7 @@ resource "packet_ssh_key" "virlckey" {
 
 # resource "packet_device" "virl" {
         #project_id = "${var.packet_project_id}"
-        #depends_on = ["packet_ssh_key.virlkey"]
+        #depends_on = ["packet_ssh_key.virlckey"]
 
 /* Project id set in variables.tf end */
 
@@ -32,7 +32,7 @@ resource "packet_project" "virl_project" {
 
 resource "packet_device" "virl" {
         project_id = "${packet_project.virl_project.id}"
-        depends_on = ["packet_ssh_key.virlkey","packet_project.virl_project"]
+        depends_on = ["packet_ssh_key.virlckey","packet_project.virl_project"]
 
 /* Create project style end */
 
@@ -147,13 +147,13 @@ resource "packet_device" "virl" {
          "salt-call state.sls_id 'l2tpv3 modprobe default' common.virl",
          "salt-call state.sls virl.openvpn.packet",
     #This is to keep the sftp from failing and taking terraform out with it in case no vpn is actually installed
-         "touch /var/local/virl/client.ovpn"
+         "touch /var/local/virl/cluster.ovpn"
 
    ]
   }
 /* openvpn client key pull */
     provisioner "local-exec" {
-        command = "sftp -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.virl.network.0.address}:/var/local/virl/client.ovpn client.ovpn"
+        command = "sftp -o 'IdentityFile=${var.ssh_private_key}' -o 'StrictHostKeyChecking=no' root@${packet_device.virl.network.0.address}:/var/local/virl/client.ovpn cluster.ovpn"
     }
 
 /* 2 compute nodes */
@@ -176,12 +176,12 @@ resource "packet_device" "compute1" {
         operating_system = "ubuntu_14_04"
         billing_cycle = "hourly"
         project_id = "${packet_project.virl_project.id}"
-        depends_on = ["packet_ssh_key.virlkey","packet_project.virl_project"]
+        depends_on = ["packet_ssh_key.virlckey","packet_project.virl_project"]
 
 # Alternate project_id. If you use a consistent project defined in variables.tf, uncomment the line below. Remember to comment out the two lines above!
 # Only have one project_id and depends_on defined at a time
         #project_id = "${var.packet_project_id}"
-        #depends_on = ["packet_ssh_key.virlkey"]
+        #depends_on = ["packet_ssh_key.virlckey"]
 
 
   connection {
@@ -236,12 +236,12 @@ resource "packet_device" "compute2" {
         operating_system = "ubuntu_14_04"
         billing_cycle = "hourly"
         project_id = "${packet_project.virl_project.id}"
-        depends_on = ["packet_ssh_key.virlkey","packet_project.virl_project"]
+        depends_on = ["packet_ssh_key.virlckey","packet_project.virl_project"]
 
 # Alternate project_id. If you use a consistent project defined in variables.tf, uncomment the line below. Remember to comment out the two lines above!
 # Only have one project_id and depends_on defined at a time
         #project_id = "${var.packet_project_id}"
-        #depends_on = ["packet_ssh_key.virlkey"]
+        #depends_on = ["packet_ssh_key.virlckey"]
 
 
   connection {
