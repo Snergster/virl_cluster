@@ -24,7 +24,9 @@ THESE STEPS ARE FOR USERS WHO WANT TO RUN 'VIRL CLUSTER on PACKET'.  YOU MUST HA
 8. Default configuration will be one controller node and one compute node.  If you'd like to use a larger cluster, you have the following options:
 
    virl3node.tf.orig == one controller node, two compute nodes
+   
    virl4node.tf.orig == one controller node, three compute nodes
+   
    virl5node.tf.orig == one controller node, four compute nodes
    
    The controller node and the compute nodes will all be based on the `packet_machine_type` that you've specified.
@@ -41,27 +43,43 @@ THESE STEPS ARE FOR USERS WHO WANT TO RUN 'VIRL CLUSTER on PACKET'.  YOU MUST HA
   3. Edit ./conf/virl.ini. You need to enable the compute nodes that you require:
      
     If you are using 'virl2node.tf', then following parameters must be set:
+
     `compute1_active: True`
+
     `compute2_active: False`
+
     `compute3_active: False`
+
     `compute4_active: False`
 
     If you are using 'virl3node.tf', then following parameters must be set:
+    
     `compute1_active: True`
+
     `compute2_active: True`
+
     `compute3_active: False`
+
     `compute4_active: False` 
     
     If you are using 'virl4node.tf', then following parameters must be set:
+    
     `compute1_active: True`
+
     `compute2_active: True`
+
     `compute3_active: True`
+
     `compute4_active: False`
 
     If you are using 'virl5node.tf', then following parameters must be set:
+    
     `compute1_active: True`
+
     `compute2_active: True`
+
     `compute3_active: True`
+
     `compute4_active: True`
 
     Adjust the file as per the examples above and save the changes.
