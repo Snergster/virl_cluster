@@ -5,7 +5,7 @@ variable "packet_api_key" {
 
 variable "packet_machine_type" {
 	description = "set to either baremetal_1 or barebetal_3"
-	default = "baremetal_1"
+	default = "baremetal_3"
 }
 
 variable "dead_mans_timer" {
