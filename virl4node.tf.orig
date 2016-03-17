@@ -3,11 +3,6 @@ provider "packet" {
         auth_token = "${var.packet_api_key}"
 }
 
-# comment next three lines out if you wish to use a consistent project
-resource "packet_project" "virl_project" {
-        name = "virl server on packet"
-}
-
 resource "packet_ssh_key" "virlckey" {
         name = "virlckey"
         public_key = "${file("${var.ssh_private_key}.pub")}"
@@ -22,7 +17,7 @@ resource "packet_ssh_key" "virlckey" {
 /* Project id set in variables.tf end */
 
 # Alternate project_id. If you use a consistent project defined in variables.tf, uncomment the section below. Remember to comment out the section below!
-# 
+# Only have one project_id and depends_on defined at a time
 
 /* Create project style start */
 
