@@ -153,7 +153,6 @@ resource "packet_device" "virl" {
         "reboot"
         ]
         }
-         "reboot"
   }
 
 resource "packet_device" "compute1" {
