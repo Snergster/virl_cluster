@@ -33,7 +33,7 @@ resource "packet_device" "virl" {
 
         hostname = "${var.hostname}"
         plan = "${var.packet_machine_type}"
-        facility = "ewr1"
+        facility = "${var.packet_location}"
         operating_system = "ubuntu_14_04"
         billing_cycle = "hourly"
 
