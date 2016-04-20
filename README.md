@@ -19,7 +19,7 @@ THESE STEPS ARE FOR USERS WHO WANT TO RUN 'VIRL CLUSTER on PACKET'.  YOU MUST HA
 
 6. Edit `settings.tf` to replace the `default` field with your packet_api_key 
 
-7. Edit `variables.tf` and edit the `packet_machine_type` default field to select the machine type (size) that you want. In addition, you can select where you want your VIRL server to be hosted from the available Packet.net data centers. EWR1 == New York, SJC1 == San Jose, CA, AMS1 == Amsterdam. Instructions in the settings.tf file will guide you to the changes that you need to make.
+7. Edit `settings.tf` and edit the `packet_machine_type` default field to select the machine type (size) that you want. In addition, you can select where you want your VIRL server to be hosted from the available Packet.net data centers. EWR1 == New York, SJC1 == San Jose, CA, AMS1 == Amsterdam. Instructions in the settings.tf file will guide you to the changes that you need to make.
 
 8. Default configuration will be one controller node and one compute node.  If you'd like to use a larger cluster, you have the following options:
 
