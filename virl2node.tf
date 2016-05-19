@@ -70,9 +70,10 @@ resource "packet_device" "virl" {
         destination = "/etc/salt/minion.d/extra.conf"
     }
     provisioner "file" {
-        source = "conf/ubuntu-default.list"
-        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
-    }
+        source = "conf/ubuntu-default.list"
+        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
+    }
+
 
    provisioner "remote-exec" {
       inline = [
@@ -202,9 +203,10 @@ resource "packet_device" "compute1" {
         destination = "/etc/salt/minion.d/extra.conf"
     }
     provisioner "file" {
-        source = "conf/ubuntu-default.list"
-        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
-    }
+        source = "conf/ubuntu-default.list"
+        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
+    }
+
    provisioner "remote-exec" {
       inline = [
         "set -e",
