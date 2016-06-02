@@ -44,7 +44,15 @@ resource "packet_device" "virl" {
         timeout = "1200"
         private_key = "${var.ssh_private_key}"
       }
-
+   provisioner "remote-exec" {
+      inline = [
+    # dead mans timer
+        "apt-get install at -y",
+        "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.virl.id}\n'>/etc/deadtimer",
+        "sleep 3",
+        "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer"
+    ]
+    }
    provisioner "remote-exec" {
       inline = [
         "mkdir -p /etc/salt/minion.d",
@@ -130,9 +138,6 @@ resource "packet_device" "virl" {
          "salt-call state.highstate",
          "salt-call state.sls common.bridge",
          "salt-call state.sls virl.basics",
-    # dead mans timer
-         "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.virl.id}\n'>/etc/deadtimer",
-         "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer",
          "salt-call state.sls common.salt-master.cluster",
          "salt-call state.sls openstack",
          "/usr/local/bin/vinstall salt",
@@ -190,7 +195,15 @@ resource "packet_device" "compute1" {
         timeout = "1200"
         private_key = "${var.ssh_private_key}"
       }
-
+   provisioner "remote-exec" {
+      inline = [
+    # dead mans timer
+        "apt-get install at -y",
+        "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.compute1.id}\n'>/etc/deadtimer",
+        "sleep 3",
+        "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer"
+    ]
+    }
    provisioner "remote-exec" {
       inline = [
         "mkdir -p /etc/salt/minion.d",
@@ -223,9 +236,6 @@ resource "packet_device" "compute1" {
         "chmod 755 /root/compute_builder",
         "apt-get update",
         "apt-get dist-upgrade -y",
-        "apt-get install at -y",
-        "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.compute1.id}\n'>/etc/deadtimer",
-        "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer",
         "reboot"
    ]
   }
@@ -255,7 +265,15 @@ resource "packet_device" "compute2" {
         timeout = "1200"
         private_key = "${var.ssh_private_key}"
       }
-
+   provisioner "remote-exec" {
+      inline = [
+    # dead mans timer
+        "apt-get install at -y",
+        "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.compute2.id}\n'>/etc/deadtimer",
+        "sleep 3",
+        "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer"
+    ]
+    }
    provisioner "remote-exec" {
       inline = [
         "mkdir -p /etc/salt/minion.d",
@@ -288,9 +306,6 @@ resource "packet_device" "compute2" {
         "chmod 755 /root/compute_builder",
         "apt-get update",
         "apt-get dist-upgrade -y",
-        "apt-get install at -y",
-        "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.compute2.id}\n'>/etc/deadtimer",
-        "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer",
         "reboot"
    ]
   }
