@@ -183,7 +183,7 @@ resource "packet_device" "virl" {
 resource "packet_device" "compute1" {
         hostname = "compute1"
         plan = "${var.packet_machine_type}"
-        facility = "ewr1"
+        facility = "${var.packet_location}"
         operating_system = "ubuntu_14_04"
         billing_cycle = "hourly"
         project_id = "${packet_project.virl_project.id}"
@@ -248,7 +248,7 @@ resource "packet_device" "compute1" {
 resource "packet_device" "compute2" {
         hostname = "compute2"
         plan = "${var.packet_machine_type}"
-        facility = "ewr1"
+        facility = "${var.packet_location}"
         operating_system = "ubuntu_14_04"
         billing_cycle = "hourly"
         project_id = "${packet_project.virl_project.id}"
@@ -311,7 +311,7 @@ resource "packet_device" "compute2" {
 }resource "packet_device" "compute3" {
         hostname = "compute3"
         plan = "${var.packet_machine_type}"
-        facility = "ewr1"
+        facility = "${var.packet_location}"
         operating_system = "ubuntu_14_04"
         billing_cycle = "hourly"
         project_id = "${packet_project.virl_project.id}"
