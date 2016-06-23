@@ -44,7 +44,6 @@ resource "packet_device" "virl" {
         timeout = "1200"
         private_key = "${var.ssh_private_key}"
       }
-
    provisioner "remote-exec" {
       inline = [
     # dead mans timer
@@ -78,11 +77,6 @@ resource "packet_device" "virl" {
         source = "conf/extra.conf"
         destination = "/etc/salt/minion.d/extra.conf"
     }
-    provisioner "file" {
-        source = "conf/ubuntu-default.list"
-        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
-    }
-
 
    provisioner "remote-exec" {
       inline = [
@@ -215,11 +209,6 @@ resource "packet_device" "compute1" {
         source = "conf/compute.extra.conf"
         destination = "/etc/salt/minion.d/extra.conf"
     }
-    provisioner "file" {
-        source = "conf/ubuntu-default.list"
-        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
-    }
-
    provisioner "remote-exec" {
       inline = [
         "set -e",
