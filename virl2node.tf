@@ -44,7 +44,6 @@ resource "packet_device" "virl" {
         timeout = "1200"
         private_key = "${var.ssh_private_key}"
       }
-
    provisioner "remote-exec" {
       inline = [
     # dead mans timer
@@ -78,11 +77,6 @@ resource "packet_device" "virl" {
         source = "conf/extra.conf"
         destination = "/etc/salt/minion.d/extra.conf"
     }
-    provisioner "file" {
-        source = "conf/ubuntu-default.list"
-        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
-    }
-
 
    provisioner "remote-exec" {
       inline = [
@@ -168,7 +162,7 @@ resource "packet_device" "virl" {
 resource "packet_device" "compute1" {
         hostname = "compute1"
         plan = "${var.packet_machine_type}"
-        facility = "ewr1"
+        facility = "${var.packet_location}"
         operating_system = "ubuntu_14_04"
         billing_cycle = "hourly"
         project_id = "${packet_project.virl_project.id}"
@@ -215,11 +209,6 @@ resource "packet_device" "compute1" {
         source = "conf/compute.extra.conf"
         destination = "/etc/salt/minion.d/extra.conf"
     }
-    provisioner "file" {
-        source = "conf/ubuntu-default.list"
-        destination = "/etc/apt/sources.list.d/ubuntu-default.list"
-    }
-
    provisioner "remote-exec" {
       inline = [
         "set -e",
@@ -228,7 +217,6 @@ resource "packet_device" "compute1" {
         "chmod 755 /root/compute_builder",
         "apt-get update",
         "apt-get dist-upgrade -y",
-        "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer",
         "reboot"
    ]
   }
