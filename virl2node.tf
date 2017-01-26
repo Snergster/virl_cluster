@@ -34,7 +34,8 @@ resource "packet_device" "virl" {
         hostname = "${var.hostname}"
         plan = "${var.packet_machine_type}"
         facility = "${var.packet_location}"
-        operating_system = "ubuntu_14_04"
+        operating_system = "ubuntu_16_04_image"
+        user_data = "${file("conf/${var.packet_location}-cloud.config")}"
         billing_cycle = "hourly"
 
   connection {
@@ -42,13 +43,13 @@ resource "packet_device" "virl" {
         user = "root"
         port = 22
         timeout = "1200"
-        private_key = "${var.ssh_private_key}"
+        private_key = "${file("${var.ssh_private_key}")}"
       }
 
    provisioner "remote-exec" {
       inline = [
     # dead mans timer
-        "apt-get install at -y",
+        "apt-get install at time -y",
         "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.virl.id}\n'>/etc/deadtimer",
         "sleep 3",
         "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer"
@@ -65,7 +66,10 @@ resource "packet_device" "virl" {
         source = "scripts/getintip"
         destination = "/usr/local/bin/getintip"
     }
-    
+    provisioner "file" {
+        source = "conf/install_salt.sh"
+        destination = "/root/install_salt.sh"
+    }    
     provisioner "file" {
         source = "keys/"
         destination = "/etc/salt/pki/minion"
@@ -90,6 +94,7 @@ resource "packet_device" "virl" {
          "set -x",
          "chmod 755 /usr/local/bin/getintip",
          "apt-get install crudini -y",
+         "service atd start",
          "printf '\nmaster: ${var.salt_master}\nid: ${var.salt_id}\nappend_domain: ${var.salt_domain}\n' >>/etc/salt/minion.d/extra.conf",
          "crudini --set /etc/virl.ini DEFAULT salt_id ${var.salt_id}",
          "crudini --set /etc/virl.ini DEFAULT salt_master ${var.salt_master}",
@@ -100,6 +105,7 @@ resource "packet_device" "virl" {
          "crudini --set /etc/virl.ini DEFAULT mysql_password ${var.mysql_password}",
          "crudini --set /etc/virl.ini DEFAULT keystone_service_token ${var.openstack_token}",
          "crudini --set /etc/virl.ini DEFAULT openvpn_enable ${var.openvpn_enable}",
+         "crudini --set /etc/virl.ini DEFAULT packet True",
          "crudini --set /etc/virl.ini DEFAULT hostname ${var.hostname}"
     ]
     }
@@ -121,27 +127,35 @@ resource "packet_device" "virl" {
       inline = [
          "set -e",
          "set -x",
-         "wget -O install_salt.sh https://bootstrap.saltstack.com",
-         "sh ./install_salt.sh -M -P stable 2015.8",
+         "echo 'wget -O install_salt.sh https://bootstrap.saltstack.com/stable/bootstrap-salt.sh'",
+         "sleep 1 || true",
+         "echo 'look now'",
+         "sh ./install_salt.sh -M -P stable",
     # create virl user
          "salt-call state.sls common.users",
     # copy authorized keys from root to virl user
+         "salt-call grains.setval mitaka true",
+         "salt-call grains.setval mysql_password ${var.mysql_password}",
+         "salt-call file.write /etc/salt/minion.d/openstack.conf 'mysql.pass: ${var.mysql_password}'",
          "salt-call state.sls virl.packet.keycopy",
          "salt-call state.highstate",
-         "salt-call state.sls common.bridge",
+         "echo 'look now'",
+         "sleep 6 || true",
          "salt-call state.sls virl.basics",
          "salt-call state.sls common.salt-master.cluster",
          "salt-call state.sls openstack",
          "/usr/local/bin/vinstall salt",
          "salt-call state.sls openstack.setup",
+         "salt-call state.sls common.bridge",
          "salt-call state.sls openstack.restart",
          "salt-call state.sls virl.std",
          "salt-call state.sls virl.ank",
+         "service virl-std restart",
+         "service virl-uwm restart",
          "salt-call state.sls virl.guest",
          "salt-call state.sls openstack.restart",
          "salt-call state.sls virl.routervms",
          "salt-call state.sls virl.openvpn",
-         "salt-call state.sls_id 'l2tpv3 modprobe default' common.virl",
          "salt-call state.sls virl.openvpn.packet",
     #This is to keep the sftp from failing and taking terraform out with it in case no vpn is actually installed
          "touch /var/local/virl/cluster.ovpn"
@@ -169,7 +183,7 @@ resource "packet_device" "compute1" {
         hostname = "compute1"
         plan = "${var.packet_machine_type}"
         facility = "${var.packet_location}"
-        operating_system = "ubuntu_14_04"
+        operating_system = "ubuntu_16_04_image"
         billing_cycle = "hourly"
         project_id = "${packet_project.virl_project.id}"
         depends_on = ["packet_ssh_key.virlckey","packet_project.virl_project"]
@@ -185,12 +199,12 @@ resource "packet_device" "compute1" {
         user = "root"
         port = 22
         timeout = "1200"
-        private_key = "${var.ssh_private_key}"
+        private_key = "${file("${var.ssh_private_key}")}"
       }
    provisioner "remote-exec" {
       inline = [
     # dead mans timer
-        "apt-get install at -y",
+        "apt-get install at time -y",
         "printf '/usr/bin/curl -H X-Auth-Token:${var.packet_api_key} -X DELETE https://api.packet.net/devices/${packet_device.compute1.id}\n'>/etc/deadtimer",
         "sleep 3",
         "at now + ${var.dead_mans_timer} hours -f /etc/deadtimer"
@@ -212,6 +226,10 @@ resource "packet_device" "compute1" {
         destination = "/root/compute_builder"
     }
     provisioner "file" {
+        source = "conf/install_salt.sh"
+        destination = "/root/install_salt.sh"
+    }
+    provisioner "file" {
         source = "conf/compute.extra.conf"
         destination = "/etc/salt/minion.d/extra.conf"
     }
@@ -227,8 +245,9 @@ resource "packet_device" "compute1" {
         "chmod 755 /usr/local/bin/getintip",
         "chmod 755 /root/compute_builder",
         "apt-get update",
-        "apt-get dist-upgrade -y",
-        "reboot"
+        "sleep 1 || true",
+        "DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' dist-upgrade -y",
+        "shutdown -r 1"
    ]
   }
 

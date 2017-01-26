@@ -1,14 +1,15 @@
 #!/bin/bash
 printf "\nmaster: %s\n" "$1" >>/etc/salt/minion.d/extra.conf
-wget -O install_salt.sh https://bootstrap.saltstack.com
 chmod 755 ./install_salt.sh
-./install_salt.sh -P stable 2015.8
+./install_salt.sh -P stable 
 /usr/bin/salt-call state.sls common.users
 /usr/bin/salt-call state.highstate
 /usr/bin/salt-call state.sls common.bridge
 /usr/bin/salt-call grains.setval packet True
+/usr/bin/salt-call grains.setval mitaka True
 /usr/bin/salt-call state.sls virl.basics
 /usr/bin/salt-call state.sls common.virl
 /usr/bin/salt-call state.sls openstack.compute
 /usr/bin/salt-call state.sls openstack.setup
-reboot
+shutdown -r 1
+
