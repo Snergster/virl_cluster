@@ -59,7 +59,8 @@ resource "packet_device" "virl" {
       inline = [
         "mkdir -p /etc/salt/minion.d",
         "mkdir -p /etc/salt/pki/minion",
-        "mkdir -p /etc/salt/master.d"
+        "mkdir -p /etc/salt/master.d",
+        "dpkg --add-architecture i386"
     ]
     }
     provisioner "file" {
@@ -214,7 +215,8 @@ resource "packet_device" "compute1" {
       inline = [
         "mkdir -p /etc/salt/minion.d",
         "mkdir -p /etc/salt/pki/minion",
-        "mkdir -p /etc/salt/master.d"
+        "mkdir -p /etc/salt/master.d",
+        "dpkg --add-architecture i386"
     ]
     }
     provisioner "file" {
